@@ -1,0 +1,11 @@
+alias t='tmux attach'
+alias ls='exa -s newest'
+alias cat=bat
+alias ss='source ~/.zshrc'
+alias cat_orig=/usr/bin/cat
+alias ggrep='git grep'
+alias tl='tmux ls'
+alias tn='tmux new-session'
+alias agp='alias | grep '
+alias gwta='git worktree add '
+alias gwtr='git worktree remove '
