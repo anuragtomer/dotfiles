@@ -1,0 +1,165 @@
+colorscheme apprentice
+set hlsearch
+set incsearch
+set ruler
+set nowrap
+set ignorecase
+set smartcase
+set nocompatible
+syntax enable
+filetype indent on
+set wildmenu
+set lazyredraw
+set showmatch
+set scrolljump=15
+set showmatch
+set diffopt+=iwhite
+set diffexpr=DiffW()
+function DiffW()
+    let opt = ""
+    if &diffopt =~ "icase"
+        let opt = opt . "-i "
+    endif
+    if &diffopt =~ "iwhite"
+        let opt = opt . "-w " " swapped vim's -b with -w
+    endif
+    silent execute "!diff -a --binary " . opt .
+                \ v:fname_in . " " . v:fname_new . " > " . v:fname_out
+endfunction
+
+let mapleader=","
+nnoremap <leader><space> :nohlsearch<CR>
+"set nu rnu
+set number relativenumber
+set tabstop=2
+set shiftwidth=2
+set expandtab
+
+augroup numbertoggle
+  autocmd!
+  autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
+  autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
+augroup END
+
+command! Togglenumbers :set nonu | :set nornu <CR>
+" pressing jj twice presses esc
+imap jj <esc>
+imap Jj <esc>
+imap jJ <esc>
+imap JJ <esc>
+map S :w<enter>
+map Q :q<enter>
+set tags=./tags,tags;$HOME
+set colorcolumn=80
+set rtp+=/usr/share/vim/addons/plugin/
+
+set laststatus=2
+set mouse=a
+nnoremap <M-j> :m .+1<CR>==
+nnoremap <M-k> :m .-2<CR>==
+inoremap <M-j> <Esc>:m .+1<CR>==gi
+inoremap <M-k> <Esc>:m .-2<CR>==gi
+vnoremap <M-j> :m '>+1<CR>gv=gv
+vnoremap <M-k> :m '<-2<CR>gv=gv
+execute pathogen#infect()
+set bs=2
+call pathogen#infect()
+syntax on
+filetype plugin indent on
+"autocmd VimEnter * NERDTree | wincmd p
+autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() |
+            \ quit | endif
+set path+=**
+command! MakeTags !ctags -R .
+nnoremap ,cpp :-1read $HOME/.vim/templates/skeleton.cpp<CR>7jo
+nnoremap ,md :-1read $HOME/.vim/templates/skeleton.md<CR>3jA
+let g:NERDTreeWinPos = "right"
+"NerdTree####################################################
+"Remove the help prompt from the first line
+"let NERDTreeMinimalUI=1
+"How wide is it on the left
+"let NERDTreeWinSize=28
+"Do not highlight the file under the cursor
+"let NERDTreeHighlightCursorline=0
+"Settings of the current directory
+"let NERDTreeChDirMode = 2
+"Automatic withdrawal
+"autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") &&b:NERDTreeType == "primary") | q | endif
+"Automatically open when opening vim
+"autocmd vimenter * NERDTree
+"<F2>as toggle
+nmap <F2> :NERDTreeToggle<CR>
+
+"Tagbar######################################################
+"Set the distribution of the two here
+"let g:tagbar_vertical = 50
+"Remove the first line of help information
+let g:tagbar_compact = 1
+"When editing the code, inTagbarAutomatically track variables
+let g:tagbar_autoshowtag = 1
+"Personal hobbies, expand and close the folder icon
+let g:tagbar_iconchars = ['▸', '▾']
+let tagbar_right = 1
+"<F3>as toggle
+nmap <F3> :TagbarToggle<CR>
+"Automatically open when opening vim
+autocmd VimEnter * TagbarOpen
+wincmd l
+"If you don’t add this sentence, the current cursor will be atNerdtreearea
+autocmd VimEnter * wincmd h
+let g:clang_format#detect_style_file = 1
+autocmd FileType c,cpp ClangFormatAutoEnable
+autocmd filetype cpp nnoremap <F4> :!clang++ -fsanitize=undefined,signed-integer-overflow,null,alignment,bool,builtin,bounds,enum,float-cast-overflow,float-divide-by-zero,function,pointer-overflow,unreachable,vptr -std=c++20 % -ggdb -o %:r <CR>
+autocmd filetype cpp nnoremap <F5> :!clang++ -fsanitize=undefined,signed-integer-overflow,null,alignment,bool,builtin,bounds,enum,float-cast-overflow,float-divide-by-zero,function,pointer-overflow,unreachable,vptr -std=c++20 % -ggdb -o %:r && ./%:r <CR>
+let g:ycm_clangd_binary_path = exepath("clang++")
+let g:ycm_clangd_uses_ycmd_caching = 0
+let g:ycm_clangd_args = ['-fsanitize=undefined,signed-integer-overflow,null,alignment,bool,builtin,bounds,enum,float-cast-overflow,float-divide-by-zero,function,pointer-overflow,unreachable,vptr', '-std=c++17']
+set rtp+='/home/anurag.tomer/.local/lib/python2.7/site-packages/powerline/bindings/vim/plugin/powerline.vim'
+set laststatus=2
+set t_Co=256
+python3 from powerline.vim import setup as powerline_setup
+python3 powerline_setup()
+python3 del powerline_setup
+source ~/.cscoperc
+"setlocal foldmethod=syntax
+"set foldnestmax=5
+fun! CleanExtraSpaces()
+    let save_cursor = getpos(".")
+    let old_query = getreg('/')
+    silent! %s/\s\+$//e
+    call setpos('.', save_cursor)
+    call setreg('/', old_query)
+endfun
+if has("autocmd")
+    autocmd BufWritePre *.go,*.txt,*.js,*.py,*.wiki,*.sh,*.coffee,*.cpp,*.hpp,*.proto :call CleanExtraSpaces()
+endif
+"source ~/.vim/bundle/vim-ripgrep/plugin/vim-ripgrep.vim
+call vundle#begin()
+Plugin 'VundleVim/Vundle.vim'
+Plugin 'lyuts/vim-rtags'
+Plugin 'scrooloose/nerdtree'
+Plugin 'airblade/vim-gitgutter'
+Plugin 'tpope/vim-fugitive'
+Plugin 'burntsushi/ripgrep'
+Plugin 'jremmen/vim-ripgrep'
+Plugin 'preservim/tagbar'
+" The following were for CodeQuery, Didn't work as expected.
+" Required
+"Plugin 'Shougo/unite.vim'
+"Plugin 'devjoe/vim-codequery'
+
+   " Optional
+   " if your vim version < 8.0
+"Plugin 'tpope/vim-dispatch'
+   " if you don't have an :Ack (or :Ag) liked command
+"Plugin 'mileszs/ack.vim'
+
+"Plugin 'ycm-core/YouCompleteMe'
+Plugin 'valloric/youcompleteme'
+call vundle#end()
+let g:ycm_clangd_binary_path = '/usr/bin/clang++'
+let g:ycm_clangd_uses_ycmd_caching = 0
+let g:ycm_clangd_args = ['-fsanitize=undefined,signed-integer-overflow,null,alignment,bool,builtin,bounds,enum,float-cast-overflow,float-divide-by-zero,function,pointer-overflow,unreachable,vptr', '-std=c++17']
+let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_conf.py'
+hi Normal guibg=NONE ctermbg=NONE
+autocmd BufWritePre *.cpp,*.hpp,*.proto :%s/\s\+$//e
